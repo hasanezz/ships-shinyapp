@@ -1,3 +1,11 @@
+ships_data<-readRDS("ship.rds") %>% select(LAT,LON,SPEED,DESTINATION,LENGTH,SHIPNAME,SHIP_ID,is_parked,DATETIME,ship_type,PORT)
+#removing ships with one observation only
+ships_data_oneobservation<-ships_data %>% group_by(SHIPNAME) %>% summarise(n=n()) %>% filter(n==1)
+ships_data<-ships_data %>%filter(!(SHIPNAME%in%c(ships_data_oneobservation$SHIPNAME)))
+ships_type_names<-ships_data %>% group_by(SHIPNAME,ship_type) %>% summarise(n=n()) %>% select(-n)
+high_traffic_port_name<-ships_data %>% group_by(PORT) %>% summarise(n=n()) %>% filter(n==max(n))
+
+
 
 render_header <- function() {
   
@@ -215,8 +223,7 @@ max_consecutive_observation_distance_with_equal_distances<-function(ships_data,s
     a4<-cbind(a3,a2) 
   a5<-a4 %>% mutate(distance_in_meters=distHaversine(cbind(LON, LAT), cbind(next_lon, next_lat) ) ) %>% filter(distance_in_meters==max(distance_in_meters)) %>% arrange(DATETIME)
     (((((a5 %>% filter(DATETIME==max(a5$DATETIME)))[1,])$distance_in_meters)==((a5[(dim(a5)[1]),])$distance_in_meters)))
-    #a5[(dim(a5)[1]),]
-    #(a5 %>% filter(DATETIME==max(a5$DATETIME)))[1,]
+
   }
   else{
     NULL
