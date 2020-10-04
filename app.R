@@ -1,7 +1,5 @@
 library(shiny)
-library(shiny.semantic)
 library(shinyjs)
-library(glue)
 library(maps)
 library(DT)
 library(plotly)
@@ -10,19 +8,10 @@ library(leaflet)
 library(magrittr)
 library(tidyverse)
 library(tibble)
+library(shiny.semantic)
 library(shinycssloaders)
 source("functions.R")
 #setwd("Desktop/appsilon/appsilon")
-ships_data<-read_csv("ships.csv")
-
-#removing ships with one observation only
-
-ships_data_oneobservation<-ships_data %>% group_by(SHIPNAME) %>% summarise(n=n()) %>% filter(n==1)
-ships_data<-ships_data %>%filter(!(SHIPNAME%in%c(ships_data_oneobservation$SHIPNAME)))
-ships_type_names<-ships_data %>% group_by(SHIPNAME,ship_type) %>% summarise(n=n()) %>% select(-n)
-#ships_type_names<-ships_data %>% group_by(PORT,SHIPNAME,ship_type) %>% summarise(n=n()) 
-high_traffic_port_name<-ships_data %>% group_by(PORT) %>% summarise(n=n()) %>% filter(n==max(n))
-
 
 ui <- shinyUI(semanticPage(
   includeCSS("apps.css"),
